@@ -8,6 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.dxc.assignment.bookstore.models.BookDetails;
@@ -170,29 +171,66 @@ public class BookController {
                     .body(jab.build().toString());
     }
 
-    @DeleteMapping(path="/deleteBooksByIsbn")
-    public ResponseEntity<String> deleteBooksByIsbn(@RequestParam String username, @RequestParam String isbn){
+    // @DeleteMapping(path="/deleteBooksByIsbn")
+    // public ResponseEntity<String> deleteBooksByIsbn(@RequestParam String username, @RequestParam String isbn){
         
-        String userRole = "";
-        Optional<UserRole> userRoleOpt = userSvc.findUserRoleByUsername(username);
-        if(userRoleOpt.isEmpty()){
-            return ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body("Error: Unable to delete record. User not registered.");
-        }
+    //     String userRole = "";
+    //     Optional<UserRole> userRoleOpt = userSvc.findUserRoleByUsername(username);
+    //     if(userRoleOpt.isEmpty()){
+    //         return ResponseEntity
+    //                     .status(HttpStatus.NOT_FOUND)
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .body("Error: Unable to delete record. User not registered.");
+    //     }
 
-        else{ userRole = userRoleOpt.get().getRole(); }
+    //     else{ userRole = userRoleOpt.get().getRole(); }
 
-        if(!(userRole.equalsIgnoreCase("Role_Admin"))){
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Json.createObjectBuilder()
-                    .add("error", "you are not authorized to perform delete action")
-                    .build().toString());
-        }
+    //     if(!(userRole.equalsIgnoreCase("Role_Admin"))){
+    //         return ResponseEntity
+    //                 .status(HttpStatus.FORBIDDEN)
+    //                 .contentType(MediaType.APPLICATION_JSON)
+    //                 .body(Json.createObjectBuilder()
+    //                 .add("error", "you are not authorized to perform delete action")
+    //                 .build().toString());
+    //     }
 
+    //     boolean recordByIsbnExist = bookSvc.getBookDetailsByIsbn(isbn);
+        
+    //     if(!recordByIsbnExist){
+    //         String message = String.format("Book details with isbn %s is not found. Thus no deletion performed" , isbn);
+
+    //         return ResponseEntity
+    //                     .status(HttpStatus.NOT_FOUND)
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .body(Json.createObjectBuilder()
+    //                     .add("error", message)
+    //                     .build().toString());
+    //     }
+
+    //     try{
+    //         bookSvc.deleteBookDetailsByIsbn(isbn);
+    //     }catch(DataAccessException ex){
+    //         return ResponseEntity
+    //                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .body(Json.createObjectBuilder()
+    //                     .add("error", ex.getMessage())
+    //                     .build().toString());
+    //     }
+
+    //     return ResponseEntity
+    //                     .status(HttpStatus.OK)
+    //                     .contentType(MediaType.APPLICATION_JSON)
+    //                     .body(Json.createObjectBuilder()
+    //                     .add("message", "record deleted successfully")
+    //                     .build().toString());
+
+    // }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping(path="/deleteBooks")
+    public ResponseEntity<String> deleteBooksByIsbn(@RequestParam String isbn){
+        
         boolean recordByIsbnExist = bookSvc.getBookDetailsByIsbn(isbn);
         
         if(!recordByIsbnExist){

@@ -7,10 +7,12 @@ import org.springframework.security.core.GrantedAuthority;
 
 public class ApiKeyAuthentication extends AbstractAuthenticationToken{
     private final String apiKey;
+    private final String username;
 
-    public ApiKeyAuthentication(String apiKey, Collection<? extends GrantedAuthority> authorities) {
+    public ApiKeyAuthentication(String apiKey, String username ,Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.apiKey = apiKey;
+        this.username = username;
         setAuthenticated(true);
     }
 
@@ -22,5 +24,9 @@ public class ApiKeyAuthentication extends AbstractAuthenticationToken{
     @Override
     public Object getPrincipal() {
         return apiKey;
+    }
+
+    public String getUsername(){
+        return username;
     }
 }
